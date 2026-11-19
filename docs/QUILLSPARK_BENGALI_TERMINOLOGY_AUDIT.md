@@ -132,33 +132,38 @@ CI integration কেবল verified implementation, test suite ও approved pol
 - [ ] Meaning, negation, modality ও condition যাচাই।
 - [ ] প্রতিটি finding-এ evidence, location, severity ও suggested fix আছে।
 - [ ] Counts findings থেকে গণনা।
-- [ ] AI-generated glossary entry draft হিসেবে চিহ্নিত।
+- [ ] AI-generated glossary candidate মানব অনুমোদন না পাওয়া পর্যন্ত draft হিসেবে চিহ্নিত।
 - [ ] Critical/high issue human-review queue-তে আছে।
 - [ ] কোনো tool execution বা approval মিথ্যাভাবে দাবি করা হয়নি।
 
-পরবর্তী পদক্ষেপ: project-approved Bengali glossary সংগ্রহ, source/target sample দিয়ে pilot audit, reviewer-দের severity ও modality policy অনুমোদন, তারপর verified API/connector পাওয়া গেলে adapter design ও implementation।
+পরবর্তী পদক্ষেপ: অনুমোদিত glossary-কে canonical source হিসেবে ব্যবহার করে source/target sample দিয়ে pilot audit, reviewer-দের severity ও modality policy অনুমোদন, তারপর verified API/connector পাওয়া গেলে adapter design ও implementation।
 
 ## 13. পরিশিষ্ট / Appendix
 
-### A. Illustrative draft glossary (not approved)
-| Source term | প্রস্তাবিত বাংলা | Category | Status |
-|---|---|---|---|
-| authentication | প্রমাণীকরণ | security | Draft |
-| authorization | অনুমোদন | security | Draft |
-| deployment | ডিপ্লয়মেন্ট | devops | Draft |
-| endpoint | এন্ডপয়েন্ট | api | Draft |
-| repository | রিপোজিটরি | development | Draft |
-| placeholder | প্লেসহোল্ডার | technical writing | Draft |
-| access token | অ্যাক্সেস টোকেন | security | Draft |
-| request body | রিকোয়েস্ট বডি | api | Draft |
+### A. Approved Bengali IT glossary (v0.1.0)
 
-এগুলো illustrative candidate মাত্র; project-approved terminology নয়। Domain reviewer ও localization lead-এর অনুমোদন ছাড়া ব্যবহার করবেন না।
+The canonical, machine-readable glossary is maintained at `glossary/bn-it-glossary.json`; its schema is `glossary/bn-it-glossary.schema.json`.
+
+| Source term | অনুমোদিত বাংলা | Category | Status |
+|---|---|---|---|
+| authentication | প্রমাণীকরণ | security | Approved |
+| authorization | অনুমোদন | security | Approved |
+| deployment | ডিপ্লয়মেন্ট | devops | Approved |
+| endpoint | এন্ডপয়েন্ট | api | Approved |
+| repository | রিপোজিটরি | development | Approved |
+| pull request | পুল রিকোয়েস্ট | git | Approved |
+| merge | মার্জ | git | Approved |
+| workflow | কর্মপ্রবাহ | general_it | Approved |
+| audit | নিরীক্ষা | quality | Approved |
+| glossary | পরিভাষা তালিকা | localization | Approved |
+
+All ten entries were marked approved in the human-review record. Approval applies to the listed preferred forms and does not imply that every context-specific synonym is invalid unless it is explicitly listed in `forbidden_forms`.
 
 ### B. JSON report template
 ```json
 {
   "document_id": "example-document",
-  "glossary_version": "0.1.0-draft",
+  "glossary_version": "0.1.0",
   "backend": "llm_assisted",
   "overall_status": "review",
   "counts": {"critical": 0, "high": 0, "medium": 0, "low": 0},
@@ -185,7 +190,7 @@ CI integration কেবল verified implementation, test suite ও approved pol
   "location": "Section 2, Segment 14",
   "source_quote": "Authentication is required.",
   "target_quote": "অথেনটিকেশন প্রয়োজন।",
-  "reason": "The found form conflicts with the illustrative draft glossary.",
+  "reason": "The found form conflicts with the approved glossary.",
   "suggested_fix": "প্রমাণীকরণ প্রয়োজন।",
   "confidence": 0.88,
   "evidence_type": "contextual_ai"
