@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quillspark.example/schemas/software-development-candidates.schema.json",
+  "title": "QuillSpark Software Development Draft Terms",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "language",
+    "domain",
+    "style",
+    "policy",
+    "terms"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+-draft$"
+    },
+    "language": {
+      "const": "bn-BD"
+    },
+    "domain": {
+      "const": "software-development"
+    },
+    "style": {
+      "const": "technical-transliteration"
+    },
+    "canonical_glossary": {
+      "type": "string"
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "human_review_required",
+        "auto_approve",
+        "draft_terms_in_production"
+      ],
+      "properties": {
+        "human_review_required": {
+          "const": true
+        },
+        "auto_approve": {
+          "const": false
+        },
+        "draft_terms_in_production": {
+          "const": false
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "existing_approved_terms_not_duplicated": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_term",
+          "canonical_id",
+          "preferred_bn"
+        ],
+        "properties": {
+          "source_term": {
+            "type": "string"
+          },
+          "canonical_id": {
+            "type": "string"
+          },
+          "preferred_bn": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "terms": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "english",
+          "bengali",
+          "definition",
+          "category",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^QS-SWD-[0-9]{3}$"
+          },
+          "english": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bengali": {
+            "type": "string",
+            "minLength": 1
+          },
+          "definition": {
+            "type": "string",
+            "minLength": 10
+          },
+          "category": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "const": "Draft"
+          }
+        }
+      }
+    }
+  }
+}
