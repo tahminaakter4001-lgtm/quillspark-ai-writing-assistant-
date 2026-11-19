@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0",
+  "glossary_id": "quillspark-bn-it",
+  "name": "QuillSpark Bengali IT Terminology Glossary",
+  "version": "0.1.0",
+  "language_pair": "en-bn",
+  "approval": "approved",
+  "description": "Human-reviewed Bengali IT glossary. Canonical terms approved by the reviewer on 2026-11-19.",
+  "terms": [
+    {
+      "id": "QS-SEC-001",
+      "source_term": "authentication",
+      "preferred_bn": "প্রমাণীকরণ",
+      "forbidden_forms": [
+        "অথেনটিকেশন"
+      ],
+      "category": "security",
+      "severity": "medium",
+      "context": "User identity verification.",
+      "status": "approved",
+      "rule_id": "QS-SEC-001"
+    },
+    {
+      "id": "QS-SEC-002",
+      "source_term": "authorization",
+      "preferred_bn": "অনুমোদন",
+      "forbidden_forms": [],
+      "category": "security",
+      "severity": "low",
+      "context": "Access permission management; distinguish permission grant from general approval according to context.",
+      "status": "approved",
+      "rule_id": "QS-SEC-002"
+    },
+    {
+      "id": "QS-DEV-001",
+      "source_term": "deployment",
+      "preferred_bn": "ডিপ্লয়মেন্ট",
+      "forbidden_forms": [
+        "স্থাপন",
+        "মোতায়েন"
+      ],
+      "category": "devops",
+      "severity": "medium",
+      "context": "Software deployment to an environment.",
+      "status": "approved",
+      "rule_id": "QS-DEV-001"
+    },
+    {
+      "id": "QS-API-001",
+      "source_term": "endpoint",
+      "preferred_bn": "এন্ডপয়েন্ট",
+      "forbidden_forms": [
+        "শেষ বিন্দু"
+      ],
+      "category": "api",
+      "severity": "medium",
+      "context": "An API endpoint or network service endpoint.",
+      "status": "approved",
+      "rule_id": "QS-API-001"
+    },
+    {
+      "id": "QS-DEV-002",
+      "source_term": "repository",
+      "preferred_bn": "রিপোজিটরি",
+      "forbidden_forms": [],
+      "category": "development",
+      "severity": "low",
+      "context": "A source-code repository.",
+      "status": "approved",
+      "rule_id": "QS-DEV-002"
+    },
+    {
+      "id": "QS-GIT-001",
+      "source_term": "pull request",
+      "preferred_bn": "পুল রিকোয়েস্ট",
+      "forbidden_forms": [],
+      "category": "git",
+      "severity": "low",
+      "context": "A proposed code change submitted for review and merge.",
+      "status": "approved",
+      "rule_id": "QS-GIT-001"
+    },
+    {
+      "id": "QS-GIT-002",
+      "source_term": "merge",
+      "preferred_bn": "মার্জ",
+      "forbidden_forms": [],
+      "category": "git",
+      "severity": "low",
+      "context": "Combining code changes or branches.",
+      "status": "approved",
+      "rule_id": "QS-GIT-002"
+    },
+    {
+      "id": "QS-GEN-001",
+      "source_term": "workflow",
+      "preferred_bn": "কর্মপ্রবাহ",
+      "forbidden_forms": [],
+      "category": "general_it",
+      "severity": "low",
+      "context": "An automated or manual sequence of tasks.",
+      "status": "approved",
+      "rule_id": "QS-GEN-001"
+    },
+    {
+      "id": "QS-QA-001",
+      "source_term": "audit",
+      "preferred_bn": "নিরীক্ষা",
+      "forbidden_forms": [],
+      "category": "quality",
+      "severity": "low",
+      "context": "A structured technical documentation or quality review.",
+      "status": "approved",
+      "rule_id": "QS-QA-001"
+    },
+    {
+      "id": "QS-L10N-001",
+      "source_term": "glossary",
+      "preferred_bn": "পরিভাষা তালিকা",
+      "forbidden_forms": [],
+      "category": "localization",
+      "severity": "low",
+      "context": "A managed collection of approved terminology.",
+      "status": "approved",
+      "rule_id": "QS-L10N-001"
+    }
+  ],
+  "governance": {
+    "human_review_required": true,
+    "auto_approve": false,
+    "allow_unapproved_terms_in_production": false,
+    "change_control": "Versioned changes require human review."
+  }
+}
