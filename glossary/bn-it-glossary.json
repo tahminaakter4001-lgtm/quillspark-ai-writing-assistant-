@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "version": "0.1.0-draft",
+  "language_pair": "en-bn",
+  "approval": "draft",
+  "description": "Illustrative Bengali IT glossary. Entries are provisional review hints, not approved terminology policy.",
+  "terms": [
+    {
+      "source_term": "authentication",
+      "preferred_bn": "প্রমাণীকরণ",
+      "forbidden_forms": ["অথেনটিকেশন"],
+      "category": "security",
+      "severity": "medium",
+      "status": "draft",
+      "note": "Draft preference; confirm with the localization/domain reviewer."
+    },
+    {
+      "source_term": "authorization",
+      "preferred_bn": "অনুমোদন",
+      "forbidden_forms": ["অথরাইজেশন"],
+      "category": "security",
+      "severity": "medium",
+      "status": "draft",
+      "note": "Context matters: distinguish permission grant from approval."
+    },
+    {
+      "source_term": "deployment",
+      "preferred_bn": "ডিপ্লয়মেন্ট",
+      "forbidden_forms": [],
+      "category": "devops",
+      "severity": "low",
+      "status": "draft"
+    },
+    {
+      "source_term": "endpoint",
+      "preferred_bn": "এন্ডপয়েন্ট",
+      "forbidden_forms": [],
+      "category": "api",
+      "severity": "low",
+      "status": "draft"
+    },
+    {
+      "source_term": "repository",
+      "preferred_bn": "রিপোজিটরি",
+      "forbidden_forms": [],
+      "category": "development",
+      "severity": "low",
+      "status": "draft"
+    },
+    {
+      "source_term": "placeholder",
+      "preferred_bn": "প্লেসহোল্ডার",
+      "forbidden_forms": [],
+      "category": "technical-writing",
+      "severity": "low",
+      "status": "draft"
+    },
+    {
+      "source_term": "access token",
+      "preferred_bn": "অ্যাক্সেস টোকেন",
+      "forbidden_forms": [],
+      "category": "security",
+      "severity": "low",
+      "status": "draft"
+    },
+    {
+      "source_term": "request body",
+      "preferred_bn": "রিকোয়েস্ট বডি",
+      "forbidden_forms": [],
+      "category": "api",
+      "severity": "low",
+      "status": "draft"
+    }
+  ]
+}
