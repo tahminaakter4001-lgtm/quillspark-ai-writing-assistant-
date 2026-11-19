@@ -1,0 +1,87 @@
+name: QuillSpark Terminology Audit CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.md"
+      - "**/*.txt"
+      - "**/*.docx"
+      - "glossary/**"
+      - "terminology/**"
+      - "scripts/**"
+      - ".github/workflows/terminology-audit.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "**/*.md"
+      - "**/*.txt"
+      - "**/*.docx"
+      - "glossary/**"
+      - "terminology/**"
+      - "scripts/**"
+      - ".github/workflows/terminology-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terminology-audit-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  terminology-audit-readiness:
+    name: Terminology audit readiness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check audit engine and glossary availability
+        id: readiness
+        shell: bash
+        run: |
+          mkdir -p audit-reports
+          missing=()
+          [[ -f "scripts/terminology_audit.py" ]] || missing+=("scripts/terminology_audit.py")
+          [[ -f "glossary/approved_terms.json" ]] || missing+=("glossary/approved_terms.json")
+
+          {
+            echo "# QuillSpark terminology audit status"
+            echo
+            echo "- Trigger: ${{ github.event_name }}"
+            echo "- Commit: ${{ github.sha }}"
+            echo
+          } > audit-reports/terminology-audit-status.md
+
+          if (( ${#missing[@]} == 0 )); then
+            echo "Readiness files are present, but the audit command is not configured in this workflow."
+            {
+              echo "## Status: NOT RUN"
+              echo
+              echo "The expected engine and glossary files exist. The actual audit is not executed until its CLI contract and input-document rules are defined."
+            } >> audit-reports/terminology-audit-status.md
+          else
+            echo "Terminology audit is not configured yet. Missing required files:"
+            {
+              echo "## Status: BLOCKED — audit engine/glossary missing"
+              echo
+              echo "The automated terminology audit was not run. Missing:"
+              for file in "${missing[@]}"; do
+                echo "- `$file`"
+                echo "::warning file=$file::Required for enabling the real terminology audit."
+              done
+              echo
+              echo "This workflow currently performs a readiness check only; it does not claim that any document has been audited."
+            } >> audit-reports/terminology-audit-status.md
+          fi
+
+      - name: Upload readiness report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quillspark-terminology-audit-status
+          path: audit-reports/terminology-audit-status.md
+          if-no-files-found: error
+          retention-days: 14
