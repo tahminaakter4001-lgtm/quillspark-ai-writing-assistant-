@@ -1,0 +1,46 @@
+name: QuillSpark Backend API CI
+
+on:
+  push:
+    branches: [main, feat/backend-connected-workflow]
+    paths:
+      - "backend/**"
+      - "glossary/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "glossary/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quillspark-backend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Install and test backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: backend/package.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm install --no-audit --no-fund
+
+      - name: Run backend tests
+        working-directory: backend
+        run: npm test
+
+      - name: Validate canonical glossary JSON
+        run: node -e "JSON.parse(require('node:fs').readFileSync('glossary/bn-it-glossary.json', 'utf8')); console.log('Glossary JSON is valid.')"
