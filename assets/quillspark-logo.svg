@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">QuillSpark AI Writing Assistant</title>
+  <desc id="desc">A gold quill crossing a white Q above an open book, with blue AI circuit accents.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#06143d"/><stop offset="1" stop-color="#092d78"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1a6"/><stop offset=".42" stop-color="#ffd329"/><stop offset="1" stop-color="#d88a00"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <circle cx="600" cy="600" r="570" fill="url(#bg)" stroke="url(#gold)" stroke-width="24"/>
+  <circle cx="600" cy="600" r="535" fill="none" stroke="#f7c943" stroke-opacity=".55" stroke-width="3"/>
+  <path d="M350 300a250 250 0 1 1 320 245l90 70-48 65-126-99a250 250 0 0 1-236-281zm95 15a155 155 0 1 0 300 75 155 155 0 0 0-300-75z" fill="#f7f8ff" stroke="url(#gold)" stroke-width="10"/>
+  <path d="M470 615c70-170 165-300 345-390-18 115-98 230-235 320-36 24-72 47-110 70z" fill="url(#gold)" stroke="#fff0a0" stroke-width="8"/>
+  <path d="M470 615l-48 126 114-84" fill="url(#gold)" stroke="#fff0a0" stroke-width="8"/>
+  <path d="M495 594c78-106 167-193 275-265M520 565l-30-55m70 16-14-66m64 34 8-65m45 41 26-55" fill="none" stroke="#fff6ca" stroke-width="10" stroke-linecap="round"/>
+  <path d="M180 795q205-105 420 0 215-105 420 0v105q-215-105-420 0-215-105-420 0z" fill="#f8fbff" stroke="url(#gold)" stroke-width="10"/>
+  <path d="M600 795v105M180 795q210-55 420 0 210-55 420 0" fill="none" stroke="#1aa7ff" stroke-width="10"/>
+  <g fill="none" stroke="#12c8ff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <path d="M850 330h90l60-60h65M850 390h130l50-50h40M850 450h75l45 45h105"/>
+    <circle cx="1065" cy="270" r="13" fill="#12c8ff"/><circle cx="1070" cy="340" r="13" fill="#12c8ff"/><circle cx="1070" cy="495" r="13" fill="#12c8ff"/>
+    <rect x="900" y="510" width="190" height="110" rx="22"/>
+  </g>
+  <text x="995" y="582" text-anchor="middle" font-family="Arial,sans-serif" font-size="64" font-weight="700" fill="#fff">AI</text>
+  <text x="600" y="1015" text-anchor="middle" font-family="Georgia,serif" font-size="112" font-weight="700" fill="#fff">Quill<tspan fill="#ffd329">Spark</tspan></text>
+  <text x="600" y="1090" text-anchor="middle" font-family="Arial,sans-serif" font-size="48" letter-spacing="3" fill="#fff">AI WRITING ASSISTANT</text>
+</svg>
