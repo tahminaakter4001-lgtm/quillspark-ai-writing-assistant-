@@ -1,4 +1,4 @@
-name: QuillSpark Terminology Audit CI
+name: QuillSpark Bengali Terminology Audit
 
 on:
   push:
@@ -8,8 +8,8 @@ on:
       - "**/*.txt"
       - "**/*.docx"
       - "glossary/**"
-      - "terminology/**"
       - "scripts/**"
+      - "tests/**"
       - ".github/workflows/terminology-audit.yml"
   pull_request:
     branches: [main]
@@ -18,8 +18,8 @@ on:
       - "**/*.txt"
       - "**/*.docx"
       - "glossary/**"
-      - "terminology/**"
       - "scripts/**"
+      - "tests/**"
       - ".github/workflows/terminology-audit.yml"
   workflow_dispatch:
 
@@ -31,57 +31,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  terminology-audit-readiness:
-    name: Terminology audit readiness
+  test-and-audit:
+    name: Test and run terminology audit
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Check audit engine and glossary availability
-        id: readiness
-        shell: bash
-        run: |
-          mkdir -p audit-reports
-          missing=()
-          [[ -f "scripts/terminology_audit.py" ]] || missing+=("scripts/terminology_audit.py")
-          [[ -f "glossary/approved_terms.json" ]] || missing+=("glossary/approved_terms.json")
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-audit.txt
 
-          {
-            echo "# QuillSpark terminology audit status"
-            echo
-            echo "- Trigger: ${{ github.event_name }}"
-            echo "- Commit: ${{ github.sha }}"
-            echo
-          } > audit-reports/terminology-audit-status.md
+      - name: Install audit dependencies
+        run: python -m pip install -r requirements-audit.txt
 
-          if (( ${#missing[@]} == 0 )); then
-            echo "Readiness files are present, but the audit command is not configured in this workflow."
-            {
-              echo "## Status: NOT RUN"
-              echo
-              echo "The expected engine and glossary files exist. The actual audit is not executed until its CLI contract and input-document rules are defined."
-            } >> audit-reports/terminology-audit-status.md
-          else
-            echo "Terminology audit is not configured yet. Missing required files:"
-            {
-              echo "## Status: BLOCKED — audit engine/glossary missing"
-              echo
-              echo "The automated terminology audit was not run. Missing:"
-              for file in "${missing[@]}"; do
-                echo "- `$file`"
-                echo "::warning file=$file::Required for enabling the real terminology audit."
-              done
-              echo
-              echo "This workflow currently performs a readiness check only; it does not claim that any document has been audited."
-            } >> audit-reports/terminology-audit-status.md
-          fi
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
 
-      - name: Upload readiness report
+      - name: Run deterministic Bengali terminology audit
+        run: >-
+          python scripts/terminology_audit.py
+          --input docs
+          --glossary glossary/bn-it-glossary.json
+          --include-draft
+          --output audit-reports/terminology-audit.json
+
+      - name: Upload audit report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: quillspark-terminology-audit-status
-          path: audit-reports/terminology-audit-status.md
-          if-no-files-found: error
+          name: quillspark-bengali-terminology-audit
+          path: audit-reports/terminology-audit.json
+          if-no-files-found: warn
           retention-days: 14
