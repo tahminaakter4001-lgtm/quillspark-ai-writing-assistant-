@@ -39,7 +39,9 @@ export function poishaToBdt(amount) {
   if (!Number.isSafeInteger(amount) || amount <= 0) {
     throw new RangeError("Amount must be a positive integer number of poisha.");
   }
-  return (amount / 100).toFixed(2);
+  const taka = Math.floor(amount / 100);
+  const poisha = String(amount % 100).padStart(2, "0");
+  return `${taka}.${poisha}`;
 }
 
 export function canTransitionPayment(from, to) {
@@ -56,7 +58,7 @@ export function assertPaymentTransition(from, to) {
 }
 
 export function mapBkashStatus(response) {
-  const status = String(response?.transactionStatus || response?.status || "").toLowerCase();
+  const status = String(response?.transactionStatus || "").toLowerCase();
   if (status === "completed" || status === "success") return "succeeded";
   if (status === "failed") return "failed";
   if (status === "cancelled" || status === "canceled") return "cancelled";
