@@ -4,6 +4,7 @@ import helmet from "helmet";
 import { rateLimit } from "express-rate-limit";
 import { z } from "zod";
 import { requireServiceAuth } from "./auth.js";
+import authRoutes from "./auth-routes.js";
 import { loadGlossary, approvedTerms } from "./glossary.js";
 import { paraphraseText, semanticAudit } from "./ai.js";
 import { buildAuditReport, deterministicGlossaryScan } from "./audit.js";
@@ -21,8 +22,8 @@ app.use(cors({
     return callback(new Error("Origin is not allowed."));
   },
   methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: false,
+  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
+  credentials: true,
   maxAge: 600
 }));
 app.use(express.json({ limit: "1mb", strict: true }));
@@ -50,6 +51,7 @@ app.get("/healthz", (_req, res) => {
   });
 });
 
+app.use("/v1/auth", apiLimiter, authRoutes);
 app.use("/v1", apiLimiter, requireServiceAuth);
 
 app.get("/v1/glossary", async (_req, res, next) => {
