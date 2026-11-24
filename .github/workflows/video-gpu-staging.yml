@@ -37,3 +37,33 @@ jobs:
         run: |
           grep -q 'profiles:' infrastructure/video-gpu/docker-compose.staging.yaml
           grep -q 'gpu-validation' infrastructure/video-gpu/docker-compose.staging.yaml
+
+  validate-terraform:
+    name: Validate AWS Terraform scaffold (no deployment)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infrastructure/video-gpu/aws
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+          terraform_wrapper: false
+
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive
+
+      - name: Initialize providers without a backend
+        run: terraform init -backend=false -input=false
+
+      - name: Validate Terraform configuration
+        run: terraform validate -no-color
+
+      - name: Confirm paid GPU provisioning remains disabled by default
+        run: |
+          grep -q 'default     = false' variables.tf
+          grep -q 'adult_billing_approval' main.tf
