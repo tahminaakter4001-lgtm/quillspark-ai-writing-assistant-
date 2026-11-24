@@ -1,0 +1,48 @@
+name: quillspark-video-gpu-staging
+
+services:
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command:
+      - sh
+      - -c
+      - 'exec redis-server --appendonly yes --requirepass "$$VIDEO_REDIS_PASSWORD"'
+    environment:
+      VIDEO_REDIS_PASSWORD: ${VIDEO_REDIS_PASSWORD:?Set VIDEO_REDIS_PASSWORD in the staging environment file}
+    volumes:
+      - video_gpu_redis_data:/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'redis-cli -a "$$VIDEO_REDIS_PASSWORD" ping | grep -q PONG'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - video_gpu_private
+
+  gpu-validation:
+    image: nvidia/cuda:12.4.1-base-ubuntu22.04
+    profiles:
+      - gpu-validation
+    command: ["nvidia-smi"]
+    environment:
+      NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-all}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: ["gpu"]
+    networks:
+      - video_gpu_private
+
+volumes:
+  video_gpu_redis_data:
+
+networks:
+  video_gpu_private:
+    driver: bridge
+    internal: true

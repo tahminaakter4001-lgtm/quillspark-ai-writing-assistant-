@@ -1,0 +1,39 @@
+name: QuillSpark Video GPU Staging Config
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "infrastructure/video-gpu/**"
+      - ".github/workflows/video-gpu-staging.yml"
+      - "docs/VIDEO_CREATOR_CLOUD_GPU_STAGING.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: video-gpu-staging-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-compose:
+    name: Validate staging Compose configuration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify Docker Compose is available
+        run: docker compose version
+
+      - name: Validate Compose configuration
+        working-directory: infrastructure/video-gpu
+        env:
+          VIDEO_REDIS_PASSWORD: ci-validation-placeholder-not-a-secret
+        run: docker compose -f docker-compose.staging.yaml config --quiet
+
+      - name: Confirm GPU check is opt-in
+        run: |
+          grep -q 'profiles:' infrastructure/video-gpu/docker-compose.staging.yaml
+          grep -q 'gpu-validation' infrastructure/video-gpu/docker-compose.staging.yaml
