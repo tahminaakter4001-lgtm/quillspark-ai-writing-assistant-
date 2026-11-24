@@ -1,6 +1,7 @@
 variable "aws_region" {
-  description = "AWS region selected and approved by the account owner."
+  description = "AWS staging region selected for QuillSpark GPU worker."
   type        = string
+  default     = "ap-south-1"
 }
 
 variable "vpc_id" {
