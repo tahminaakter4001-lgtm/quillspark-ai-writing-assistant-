@@ -1,0 +1,10 @@
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+runtime.env
+**/runtime.env
+deploy/sandbox/runtime.env
+
+# Local generated data
+*.log
