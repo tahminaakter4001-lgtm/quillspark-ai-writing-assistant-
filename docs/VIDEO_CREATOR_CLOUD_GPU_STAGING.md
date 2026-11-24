@@ -3,6 +3,9 @@
 ## Decision record
 
 - Hosting model: self-hosted inference on a cloud GPU VM.
+- Cloud provider: AWS.
+- AWS Region: Asia Pacific (Mumbai), `ap-south-1`.
+- Candidate GPU instance: `g6e.2xlarge`; confirm AZ capacity and account quota before launch.
 - GPU vendor: NVIDIA.
 - Initial environment: staging only.
 - Output targets: landscape 16:9 and portrait 9:16.
@@ -19,6 +22,7 @@ The current repository contains a Node.js/Express API, PostgreSQL migrations, a 
 - `infrastructure/video-gpu/.env.example`: non-secret environment-variable template.
 - `infrastructure/video-gpu/README.md`: operator setup, security boundaries, compatibility notes and next steps.
 - `.github/workflows/video-gpu-staging.yml`: static Compose configuration validation on pull requests and manual dispatch.
+- `infrastructure/video-gpu/aws/`: opt-in Terraform scaffold targeting AWS Mumbai.
 
 The GPU validation container executes `nvidia-smi`. It is not an inference API or generation worker. Redis is not connected to the existing API yet; that integration requires a later reviewed code change and a defined authentication boundary.
 
@@ -26,11 +30,12 @@ The GPU validation container executes `nvidia-smi`. It is not an inference API o
 
 ### Stage A — cloud host readiness
 
-1. Select a cloud VM with an NVIDIA GPU and sufficient VRAM for the model chosen in Stage B.
-2. Confirm the cloud image, host kernel and NVIDIA driver support the selected CUDA runtime.
-3. Install Docker Engine, Docker Compose and NVIDIA Container Toolkit using vendor-supported instructions.
-4. Restrict inbound access with the cloud firewall. Do not expose Redis or GPU administration services.
-5. Create the staging secret in the cloud secret manager and populate the local environment file on the VM.
+1. Confirm G6e capacity and the account's EC2 quota in the chosen Mumbai Availability Zone.
+2. Have the AWS account owner review current EC2, EBS, storage and data-transfer charges; configure budgets and billing alerts.
+3. Select an AWS Deep Learning AMI compatible with the chosen GPU instance and verify its NVIDIA driver/CUDA compatibility.
+4. Use an existing private subnet and an organization-approved private administration path. Do not expose SSH, Redis or GPU administration services publicly.
+5. Install Docker Engine, Docker Compose and NVIDIA Container Toolkit using vendor-supported instructions.
+6. Create staging secrets in an approved secret manager; never commit credentials.
 
 ### Stage B — GPU validation
 
