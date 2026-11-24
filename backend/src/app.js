@@ -34,6 +34,12 @@ const apiLimiter = rateLimit({
   standardHeaders: "draft-8",
   legacyHeaders: false
 });
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false
+});
 const aiLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 12,
@@ -51,7 +57,7 @@ app.get("/healthz", (_req, res) => {
   });
 });
 
-app.use("/v1/auth", apiLimiter, authRoutes);
+app.use("/v1/auth", apiLimiter, authLimiter, authRoutes);
 app.use("/v1", apiLimiter, requireServiceAuth);
 
 app.get("/v1/glossary", async (_req, res, next) => {
@@ -207,6 +213,15 @@ app.use((error, _req, res, _next) => {
   }
   if (error?.code === "DATABASE_NOT_CONFIGURED") {
     return res.status(503).json({ error: { code: error.code, message: error.message } });
+  }
+  if (error?.code === "INVALID_CREDENTIALS") {
+    return res.status(401).json({ error: { code: error.code, message: "Email or password is incorrect." } });
+  }
+  if (error?.code === "EMAIL_ALREADY_REGISTERED") {
+    return res.status(409).json({ error: { code: error.code, message: error.message } });
+  }
+  if (["PASSWORD_POLICY", "INVALID_EMAIL"].includes(error?.code)) {
+    return res.status(400).json({ error: { code: error.code, message: error.message } });
   }
   if (error?.status === 429) {
     return res.status(429).json({ error: { code: "AI_RATE_LIMIT", message: "The AI provider rate limit was reached. Retry later." } });
