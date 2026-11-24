@@ -5,6 +5,7 @@ import { rateLimit } from "express-rate-limit";
 import { z } from "zod";
 import { requireServiceAuth } from "./auth.js";
 import authRoutes from "./auth-routes.js";
+import paymentRoutes from "./payments/routes.js";
 import { loadGlossary, approvedTerms } from "./glossary.js";
 import { paraphraseText, semanticAudit } from "./ai.js";
 import { buildAuditReport, deterministicGlossaryScan } from "./audit.js";
@@ -58,6 +59,7 @@ app.get("/healthz", (_req, res) => {
 });
 
 app.use("/v1/auth", apiLimiter, authLimiter, authRoutes);
+app.use("/v1/payments", apiLimiter, paymentRoutes);
 app.use("/v1", apiLimiter, requireServiceAuth);
 
 app.get("/v1/glossary", async (_req, res, next) => {
