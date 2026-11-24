@@ -22,6 +22,8 @@ export async function migrateDatabase() {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+    // Serialize startup migrations across multiple app instances.
+    await client.query("SELECT pg_advisory_xact_lock(731904221)");
     await client.query(`
       CREATE TABLE IF NOT EXISTS schema_migrations (
         migration_name TEXT PRIMARY KEY,
