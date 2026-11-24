@@ -15,14 +15,14 @@ provider "aws" {
 
 resource "aws_security_group" "gpu_worker" {
   name_prefix = "${var.project_name}-"
-  description = "Outbound-only security group for private QuillSpark GPU staging worker"
+  description = "HTTPS-egress-only security group for private QuillSpark GPU staging worker"
   vpc_id      = var.vpc_id
 
   egress {
-    description = "Allow outbound HTTPS and package/model retrieval; restrict further at the VPC egress layer."
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    description = "Allow outbound HTTPS for approved package and model retrieval."
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
