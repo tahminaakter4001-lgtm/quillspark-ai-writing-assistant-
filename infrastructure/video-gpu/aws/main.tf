@@ -14,6 +14,8 @@ provider "aws" {
 }
 
 resource "aws_security_group" "gpu_worker" {
+  count = var.enable_gpu_instance ? 1 : 0
+
   name_prefix = "${var.project_name}-"
   description = "HTTPS-egress-only security group for private QuillSpark GPU staging worker"
   vpc_id      = var.vpc_id
@@ -44,7 +46,7 @@ resource "aws_instance" "gpu_worker" {
   ami                         = var.gpu_ami_id
   instance_type               = var.instance_type
   subnet_id                   = var.private_subnet_id
-  vpc_security_group_ids      = [aws_security_group.gpu_worker.id]
+  vpc_security_group_ids      = [aws_security_group.gpu_worker[0].id]
   associate_public_ip_address = false
   monitoring                  = true
 
