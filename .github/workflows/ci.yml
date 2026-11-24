@@ -2,9 +2,12 @@ name: QuillSpark CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - feature/bkash-payment-sandbox
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -14,8 +17,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  backend-tests:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -24,13 +30,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install backend dependencies
+        run: npm install --no-audit --no-fund
 
-      - name: Run tests (when configured)
-        run: npm test --if-present
-
-      - name: Build (when configured)
-        run: npm run build --if-present
+      - name: Run backend tests
+        run: npm test
