@@ -2,7 +2,7 @@
 
 ## Status
 
-The Sandbox payment schema and domain foundation exist on `feature/bkash-payment-sandbox`. Checkout endpoints, provider HTTP calls, customer history, and admin operations are intentionally blocked until the application has a trustworthy end-user identity and role model.
+The Sandbox payment schema and domain foundation exist on `feature/bkash-payment-sandbox`. Generic customer/admin authorization guards and unit tests have now been added in `backend/src/payments/authorization.js` and `backend/test/payment-authorization.test.js`. They deliberately are not mounted in the API until the real login provider and verified principal contract are identified. Checkout endpoints, provider HTTP calls, customer history, and admin operations remain blocked until the application has a trustworthy end-user identity and role model.
 
 ## Findings from the current API
 
@@ -11,7 +11,7 @@ Reviewed on the feature branch:
 - `backend/src/app.js` applies `requireServiceAuth` to all `/v1` routes.
 - `backend/src/auth.js` validates one shared `QUILLSPARK_API_TOKEN`. This is service-to-service authentication, not an end-user session.
 - The existing review endpoint accepts `reviewer_id` from the request body. A caller can therefore claim another reviewer ID; it is not an authorization identity.
-- No verified customer session, customer ownership middleware, or admin-role authorization was found in the inspected backend entry points.
+- No verified customer session or admin-role provider was found in the inspected backend entry points. The new guards require a trusted upstream middleware to populate `req.auth`; they do not authenticate tokens or create sessions themselves.
 - The payment schema has a `customer_id` field, but a database column alone does not establish who owns that identity.
 
 ## Required controls before payment routes are implemented
@@ -27,7 +27,7 @@ Reviewed on the feature branch:
 ## Payment implementation sequence after the gate is satisfied
 
 1. Add/verify the end-user authentication adapter and tests.
-2. Add customer ownership and admin permission middleware with negative authorization tests.
+2. Connect the new customer ownership and admin permission guards to the verified session adapter, then add route-level negative authorization tests.
 3. Confirm the current bKash merchant Sandbox API contract and merchant onboarding details with the authorized merchant account owner.
 4. Implement server-side token handling and create/execute/query flows against Sandbox only.
 5. Verify payment status server-to-server before marking an order as paid. Treat browser redirects/callback parameters as untrusted hints, not proof of payment.
