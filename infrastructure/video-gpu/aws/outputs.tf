@@ -9,6 +9,6 @@ output "gpu_private_ip" {
 }
 
 output "gpu_security_group_id" {
-  description = "Outbound-only security group ID."
-  value       = aws_security_group.gpu_worker.id
+  description = "HTTPS-egress-only security group ID; null while staging is disabled."
+  value       = try(aws_security_group.gpu_worker[0].id, null)
 }
