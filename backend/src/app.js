@@ -10,6 +10,7 @@ import { loadGlossary, approvedTerms } from "./glossary.js";
 import { paraphraseText, semanticAudit } from "./ai.js";
 import { buildAuditReport, deterministicGlossaryScan } from "./audit.js";
 import { getAudit, listReviews, pool, saveAudit, saveReview } from "./db.js";
+import { manusRouter, manusWebhookRouter } from "./manus-router.js";
 
 const app = express();
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
@@ -27,7 +28,7 @@ app.use(cors({
   credentials: true,
   maxAge: 600
 }));
-app.use(express.json({ limit: "1mb", strict: true }));
+app.use("/api/webhooks", manusWebhookRouter); // Must precede JSON parsing: Manus signatures cover raw bytes.\napp.use(express.json({ limit: "1mb", strict: true }));
 
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -61,6 +62,7 @@ app.get("/healthz", (_req, res) => {
 app.use("/v1/auth", apiLimiter, authLimiter, authRoutes);
 app.use("/v1/payments", apiLimiter, paymentRoutes);
 app.use("/v1", apiLimiter, requireServiceAuth);
+app.use("/api/integrations/manus", apiLimiter, manusRouter);\n\napp.use("/v1", apiLimiter, requireServiceAuth);
 
 app.get("/v1/glossary", async (_req, res, next) => {
   try {
@@ -210,7 +212,7 @@ app.use((error, _req, res, _next) => {
   if (error?.message === "Origin is not allowed.") {
     return res.status(403).json({ error: { code: "ORIGIN_NOT_ALLOWED", message: "This origin is not permitted." } });
   }
-  if (error?.code === "AI_NOT_CONFIGURED") {
+  if (error?.code === "MANUS_NOT_CONFIGURED") {\n    return res.status(503).json({ error: { code: error.code, message: "Manus integration is not configured." } });\n  }\n  if (error?.code?.startsWith("MANUS_")) {\n    const status = error.status === 429 ? 429 : error.status === 404 ? 404 : error.status === 401 || error.status === 403 ? 502 : 502;\n    return res.status(status).json({ error: { code: error.code, message: "The Manus service could not complete the request." } });\n  }\n  if (error?.code === "AI_NOT_CONFIGURED") {
     return res.status(503).json({ error: { code: "AI_NOT_CONFIGURED", message: "OpenAI service is not configured." } });
   }
   if (error?.code === "DATABASE_NOT_CONFIGURED") {
