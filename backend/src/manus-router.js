@@ -107,7 +107,7 @@ manusRouter.post("/tasks/:taskId/messages", async (req, res, next) => {
     const input = messageSchema.parse(req.body);
     await manusRequest("/v2/task.sendMessage", {
       method: "POST",
-      body: { task_id: task.provider_task_id, message: input.message }
+      body: { task_id: task.provider_task_id, message: { content: [{ type: "text", text: input.message }] } }
     });
     return res.status(202).json({ accepted: true, taskId: task.provider_task_id });
   } catch (error) { return next(error); }
@@ -119,6 +119,11 @@ manusRouter.post("/tasks/:taskId/confirm", async (req, res, next) => {
     const task = await ownedTask(req.quillsparkUser, req.params.taskId);
     if (!task) return res.status(404).json({ error: { code: "TASK_NOT_FOUND", message: "Task not found." } });
     const input = confirmSchema.parse(req.body);
+    const latest = await manusRequest("/v2/task.listMessages", { query: { task_id: task.provider_task_id, order: "desc", limit: 20 } });
+    const waiting = (latest.messages || []).find((item) => item?.status_update?.agent_status === "waiting")?.status_update?.status_detail;
+    if (!waiting || waiting.waiting_for_event_id !== input.event_id || waiting.waiting_for_event_type === "messageAskUser") {
+      return res.status(409).json({ error: { code: "WAITING_EVENT_MISMATCH", message: "The requested confirmation is no longer pending. Refresh task status." } });
+    }
     await manusRequest("/v2/task.confirmAction", {
       method: "POST",
       body: { task_id: task.provider_task_id, event_id: input.event_id, input: input.input }
@@ -142,6 +147,7 @@ async function getManusWebhookPublicKey() {
 
 manusWebhookRouter.post("/manus", express.raw({ type: "application/json", limit: "256kb" }), async (req, res) => {
   try {
+    if (!pool) return res.status(503).json({ error: "Task database is not configured." });
     const configuredUrl = process.env.MANUS_WEBHOOK_PUBLIC_URL;
     if (!configuredUrl || !configuredUrl.startsWith("https://") ||
         new URL(configuredUrl).pathname !== "/api/webhooks/manus") {
