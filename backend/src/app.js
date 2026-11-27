@@ -4,6 +4,8 @@ import helmet from "helmet";
 import { rateLimit } from "express-rate-limit";
 import { z } from "zod";
 import { requireServiceAuth } from "./auth.js";
+import authRoutes from "./auth-routes.js";
+import paymentRoutes from "./payments/routes.js";
 import { loadGlossary, approvedTerms } from "./glossary.js";
 import { paraphraseText, semanticAudit } from "./ai.js";
 import { buildAuditReport, deterministicGlossaryScan } from "./audit.js";
@@ -22,8 +24,8 @@ app.use(cors({
     return callback(new Error("Origin is not allowed."));
   },
   methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: false,
+  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
+  credentials: true,
   maxAge: 600
 }));
 app.use("/api/webhooks", manusWebhookRouter); // Must precede JSON parsing: Manus signatures cover raw bytes.\napp.use(express.json({ limit: "1mb", strict: true }));
@@ -31,6 +33,12 @@ app.use("/api/webhooks", manusWebhookRouter); // Must precede JSON parsing: Manu
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 60,
+  standardHeaders: "draft-8",
+  legacyHeaders: false
+});
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
   standardHeaders: "draft-8",
   legacyHeaders: false
 });
@@ -51,6 +59,9 @@ app.get("/healthz", (_req, res) => {
   });
 });
 
+app.use("/v1/auth", apiLimiter, authLimiter, authRoutes);
+app.use("/v1/payments", apiLimiter, paymentRoutes);
+app.use("/v1", apiLimiter, requireServiceAuth);
 app.use("/api/integrations/manus", apiLimiter, manusRouter);\n\napp.use("/v1", apiLimiter, requireServiceAuth);
 
 app.get("/v1/glossary", async (_req, res, next) => {
@@ -206,6 +217,15 @@ app.use((error, _req, res, _next) => {
   }
   if (error?.code === "DATABASE_NOT_CONFIGURED") {
     return res.status(503).json({ error: { code: error.code, message: error.message } });
+  }
+  if (error?.code === "INVALID_CREDENTIALS") {
+    return res.status(401).json({ error: { code: error.code, message: "Email or password is incorrect." } });
+  }
+  if (error?.code === "EMAIL_ALREADY_REGISTERED") {
+    return res.status(409).json({ error: { code: error.code, message: error.message } });
+  }
+  if (["PASSWORD_POLICY", "INVALID_EMAIL"].includes(error?.code)) {
+    return res.status(400).json({ error: { code: error.code, message: error.message } });
   }
   if (error?.status === 429) {
     return res.status(429).json({ error: { code: "AI_RATE_LIMIT", message: "The AI provider rate limit was reached. Retry later." } });
